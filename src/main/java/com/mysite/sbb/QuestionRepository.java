@@ -1,6 +1,10 @@
 package com.mysite.sbb;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.time.LocalDateTime;
+
 
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
 	// QuestionRepository : Question 테이블을 CRUD 하는 메소드
@@ -17,4 +21,51 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 		// findAll()	: select
 		// save()		: insert, update
 		// delete()		: delete
+	
+	// JPA 메소드를 사용한 테이블 검색 : 기본적으로 2개의 메소드는 자동으로 등록되어있음
+			// 그외는 등록해서 사용해야한다.
+		// findAll()	: select * from question;	<== 모든 레코드 출력
+		// findById(?)	: select * from question where id=?	<== id를 기준으로 레코드 1개
+	
+	// 검색된 레코드가 1개 일때는 Option에 저장
+	// 검색된 레코드가 여러개 일때는 List에 저장
+	// select * from question where subject='?'
+	List<Question> findBySubject(String subject);
+	
+	// select * from question where content='?'
+	List<Question> findByContent(String content);
+	
+	// 특정 컬럼의 값을 검색 : Like 검색 <== 레코드가 여러개가 검색 : List
+	// select * from question where subject like '%?%'
+	List<Question> findBySubjectLike(String subject);	
+
+	// select * from question where content like '%?%'
+	List<Question> findByContentLike(String content);
+	
+	// 제목 과 내용 컬럼에서 검색
+	// select * from question where subject like '%?%' or content like '%?%'
+	List<Question> findBySubjectLikeOrContentLike(String subject, String content);
+	
+	// 정렬해서 출력하는 메소드 생성 <== 간단하고 자주 사용하는것, 복잡한 쿼리 : JPQL, QueryDSL
+	// 날짜를 기준으로 오름차순 정렬 (Asc)  : 1 >> 9, A >> Z, ㄱ >> ㅎ
+	// select * from question order by create_date asc
+//	List<Question> findAllOrderByCreateDateAsc();
+
+	// 날짜를 기준으로 내림차순 정렬 (Desc) : 9 >> 1, Z >> A, ㅎ >> ㄱ
+	// select * from question order by create_date desc
+//	List<Question> findAllOrderByCreateDateDesc();
+	
+	// 제목으로 기준으로 검색후 날짜를 기준으로 오름차순 정렬
+	// select * from question where subject Like '%?%' order by create_date asc
+	List<Question> findBySubjectLikeOrderByCreateDateAsc(String subject);
+
+	// select * from question where subject Like '%?%' order by create_date desc
+	List<Question> findBySubjectLikeOrderByCreateDateDesc(String subject);
+	
+	// 검색 기능을 사용 (select, find)
+	
+	// save() : insert, update
+	
+	// delete() : delete
+	
 }

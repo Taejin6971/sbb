@@ -7,4 +7,9 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer> {
 		// 메소드를 사용해서 Answer 테이블을 CRUD
 	// findAll()	: select * from Answer;
 	// save(answer) : insert into Answer values(?);
+	
+	// findAll()	: select * from Answer
+	// findbyId(?)	: select * from Answer where id=?
+	// save()		: insert, update
+	// delete()		: delete
 }
