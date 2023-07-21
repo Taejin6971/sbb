@@ -1,11 +1,11 @@
-package com.mysite.sbb;
+package com.mysite.sbb.question;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.time.LocalDateTime;
+import org.springframework.stereotype.Repository;
 
-
+@Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
 	// QuestionRepository : Question 테이블을 CRUD 하는 메소드
 	
@@ -49,11 +49,11 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 	// 정렬해서 출력하는 메소드 생성 <== 간단하고 자주 사용하는것, 복잡한 쿼리 : JPQL, QueryDSL
 	// 날짜를 기준으로 오름차순 정렬 (Asc)  : 1 >> 9, A >> Z, ㄱ >> ㅎ
 	// select * from question order by create_date asc
-//	List<Question> findAllOrderByCreateDateAsc();
+	List<Question> findAllByOrderByCreateDateAsc();
 
 	// 날짜를 기준으로 내림차순 정렬 (Desc) : 9 >> 1, Z >> A, ㅎ >> ㄱ
 	// select * from question order by create_date desc
-//	List<Question> findAllOrderByCreateDateDesc();
+	List<Question> findAllByOrderByCreateDateDesc();
 	
 	// 제목으로 기준으로 검색후 날짜를 기준으로 오름차순 정렬
 	// select * from question where subject Like '%?%' order by create_date asc

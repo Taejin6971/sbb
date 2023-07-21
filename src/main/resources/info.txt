@@ -25,3 +25,30 @@ JPA 사용
 	save()		: insert, update
 	delete()	: delete
 	count()		: <Question 테이블의 레코드의 총 갯수>
+	
+// Spring Boot : MVC 개발하는 로직
+client ==> Controller ==> Service ==> Repository ==> Entity ==> DB Table 
+
+	Service Layer를 만드는 이유
+		- 반복된 코드를 줄여줄수 있음
+		- 보안
+		
+	* Controller 에서 직접 Repository를 접근하지 않는다. 중복된 코드가 반복될수 있기때문에
+	
+Spring IoC 컨테이너에 Bean 생성하는 어노테이션
+	- Spring에서는 객체를 생성해서 컨테이너에 로드
+	- 클래스 상단에 설정
+		- @Component  : 일반적인 객체를 Bean에 등록
+		- @Controller : Controller class
+			=> 1. 클라이언트 요청, 2. service(비즈니스 로직처리), 3. view
+		- @ Service   : Service class
+			=> 비즈니스 로직을 처리, Repository 에 일을 처리
+		- Repository  : Repository class
+			=> DB의 CRUD 메소드
+			
+DI (의존성 주입) : IoC 컨테이너에 생성된 객체를 변수에 주입
+	- @Autowired : 타입을 검색해서 컨테이너에 객체를 주입, 비슷한 타입의 구현한 객체가 여러개인 경우 문제가 발생
+		// @Test : 테스트 할때 사용
+	- 생성자를 이용한 주입 : (권장 사항) <== @RequiredArgsConstructor (클래스 위에 할당)
+		private final QuestionRepository questionRepository;
+	- setter를 이용한 주입

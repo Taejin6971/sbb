@@ -1,9 +1,11 @@
-package com.mysite.sbb;
+package com.mysite.sbb.question;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
+
+import com.mysite.sbb.answer.Answer;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

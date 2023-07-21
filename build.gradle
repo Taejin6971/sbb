@@ -22,12 +22,22 @@ repositories {
 }
 
 dependencies {
+	// thymeleaf 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	
+	// Spring MVC
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	// lombok
 	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	
+	// devtool
 	// developmentOnly : 개발시에만 적용, 배포 할때는 배포되지 않음. (*.jar)
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
+	
+	// Junit 테스트 라이브러리
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	
 	// H2 DB 접속 : 개발시에만 사용됨 ==> Oracle, MySQL, MS-SQL, PostgreSQL, ...

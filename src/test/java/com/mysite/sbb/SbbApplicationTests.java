@@ -1,14 +1,23 @@
 package com.mysite.sbb;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.answer.AnswerRepository;
+import com.mysite.sbb.question.Question;
+import com.mysite.sbb.question.QuestionRepository;
+
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 class SbbApplicationTests {
@@ -136,26 +145,40 @@ class SbbApplicationTests {
 	}
 	
 //	@Test
-//	void searchCreateDateAsc() {
-//		// 날짜를 기준으로 오름차순 정렬해서 List에 저장
-//		List<Question> all = qr.findAllOrderByCreateDateAsc();
-//		
-//		System.out.println("===== 날짜를 오름차순 정렬 : 시작 =====");
-//		
-//		for (int i = 0; i < all.size(); i++) {
-//
-//			System.out.println("=====" + i + "=====");
-//
-//			Question q = all.get(i);
-//			
-//			System.out.println(q.getId());
-//			System.out.println(q.getCreateDate());
-//			System.out.println(q.getSubject());
-//			System.out.println(q.getContent());
-//		}
-//		
-//		System.out.println("===== 날짜를 오름차순 정렬 : 끝 =====");
-//	}
+	void searchCreateDateAsc() {
+		// 날짜를 기준으로 오름차순 정렬해서 List에 저장
+		List<Question> all = qr.findAllByOrderByCreateDateAsc();
+		
+		System.out.println("===== 날짜를 오름차순 정렬 : 시작 =====");
+		for (int i = 0; i < all.size(); i++) {
+			System.out.println("=====" + i + "=====");
+
+			Question q = all.get(i);
+			System.out.println(q.getId());
+			System.out.println(q.getCreateDate());
+			System.out.println(q.getSubject());
+			System.out.println(q.getContent());
+		}
+		System.out.println("===== 날짜를 오름차순 정렬 : 끝 =====");
+	}
+	
+//	@Test
+	void searchCreateDateDesc() {
+		// 날짜를 기준으로 내림차순 정렬해서 List에 저장
+		List<Question> all = qr.findAllByOrderByCreateDateDesc();
+		
+		System.out.println("===== 날짜를 내림차순 정렬 : 시작 =====");
+		for (int i = 0; i < all.size(); i++) {
+			System.out.println("=====" + i + "=====");
+			
+			Question q = all.get(i);
+			System.out.println(q.getId());
+			System.out.println(q.getCreateDate());
+			System.out.println(q.getSubject());
+			System.out.println(q.getContent());
+		}
+		System.out.println("===== 날짜를 내림 차순 정렬 : 끝 =====");
+	}
 	
 //	@Test
 	void searchSubjectAndSortAsc() {
@@ -260,7 +283,7 @@ class SbbApplicationTests {
 		ar.save(aa);
 	}
 	
-	@Test
+//	@Test
 	void insertAnswer3() {
 		Question q = new Question();
 		q.setId(3);
@@ -282,5 +305,166 @@ class SbbApplicationTests {
 		aaa.setCreatedate(LocalDateTime.now());
 		aaa.setQuestion(q);
 		ar.save(aaa);
+	}
+	
+	// 데이터 입력 save() : QUestion 테이블의 값 입력
+	// Entity 클래스의 Primary Key 컬럼의 값이 비어있으면 insert
+//	@Test
+	void insertQuestion4() {
+		// Question Entity 클래스에 setter 주입으로 필드에 값을 할당. id 값을 넣지 않음
+		Question q = new Question();
+		q.setSubject("제목 - 스프링 부트에 대한 질문 입니다.333");
+		q.setContent("내용 - 스프링 부트에 대한 내용 입니다.333");
+		q.setCreateDate(LocalDateTime.now());
+		qr.save(q);
+	}
+	
+	// 데이터 수정 save() : Question 테이블의 특정 필드 수정
+	// Entity 클래스의 Primary Key 컬럼의 값이 존재하면 update
+//	@Test
+	void modifyQuestion3() {
+		// 기존의 Question 테이블의 레코드를 불러와서 setter로 수정후 save()
+		Optional<Question> oq = qr.findById(6);
+		
+		if (oq.isPresent()) {
+			Question q = oq.get();
+			q.setSubject("제목만 수정됨");
+			qr.save(q);
+		}
+	}
+	
+	// 데이터 삭제 delete(), Question Entity 클래스의 id 필드의 값을 setter 주입후 삭제
+//	@Test
+	void deleteQuestion33() {
+		Question q = new Question();
+		q.setId(7);
+		qr.delete(q);
+	}
+	
+	// Answer 클래스의 값 insert : 자식 클래스, 부모 테이블의 값을 참조해서 값을 넣어야한다.
+//	@Test
+	void insertAnswer33() {
+		// Question 객체 꺼내오기
+		Optional<Question> oq = qr.findById(4);
+		
+		if (oq.isPresent()) {
+			Question q = oq.get();
+
+			// Answer 객체 생성
+			Answer a = new Answer();
+			a.setContent("4번 질문에 대한 답변글 입니다.");
+			a.setCreatedate(LocalDateTime.now());
+			a.setQuestion(q);
+			ar.save(a);
+		}
+	}
+
+	// Answer의 값을 수정 save() : 기존의 레코드를 가져와서 수정
+//	@Test
+	void updateAnswer33() {
+		Optional<Answer> oa = ar.findById(3);
+		
+		if (oa.isPresent()) {
+			Answer a = oa.get();
+			a.setContent("수정된 답변 글입니다.----");
+			ar.save(a);
+		}
+	}
+	
+	// Answer의 값 삭제 delete()
+//	@Test
+	void deleteAnswer33() {
+		Answer a = new Answer();
+		a.setId(7);
+		ar.delete(a);
+	}
+
+	// 질문에 대한 모든 답변글 읽어오기, Question Entity 클래스의
+	// *주의 : Test로 적용할때 Transaction 이 분리되어서 동일한 Transaction에서 처리되도록 설정
+	// @Transactional : 메소드 위에 할당, 메소드 내부의 여러 SQL쿼리를 하나의 트랜잭션으로 처리하도록 함.
+//	@Transactional
+//	@Test
+	void allAnswerList() {
+		// Question 객체의 id=2 을 읽어온다.
+		Optional<Question> oq = qr.findById(3);
+		
+		if (oq.isPresent()) {
+			Question q = oq.get();
+			
+			// Question 객체의 AnswerList의 값을 getter를 사용해 가지고 온다.
+			// all 에는 question id=2 번에 대한 답변 레코드(Answer)가 담겨있다.
+			List<Answer> all = q.getAnswerList();
+			assertEquals(3, all.size());
+			
+			System.out.println("===== 3번 글에 대한 답변 모두 출력 시작 =====");
+			for (int i = 0; i < all.size(); i++) {
+				System.out.println("===== Answer : " + i + " =====");
+				Answer a = all.get(i);
+				System.out.println(a.getId());
+				System.out.println(a.getQuestion());
+				System.out.println(a.getContent());
+				System.out.println(a.getCreatedate());
+			}
+			System.out.println("===== 3번 글에 대한 답변 모두 출력 끝 =====");
+		}
+	}
+	
+	// 질문에 대한 답변글 리스트 출력 : question id 2번 글에 대한 답변 List를 출력
+	@Transactional
+	@Test
+	void allAnswerList2() {
+		Optional<Question> oq = qr.findById(2);
+		
+		if (oq.isPresent()) {
+			Question q = oq.get();
+			List<Answer> all = q.getAnswerList();
+			assertEquals(2, all.size());
+			
+			System.out.println("===== Answer 객체 출력 시작 =====");
+			for (int i = 0; i < all.size(); i++) {
+				System.out.println("===== Answer : " + i + " =====");
+				Answer a = all.get(i);
+				System.out.println(a.getId());
+				System.out.println(a.getContent());
+				System.out.println(a.getCreatedate());
+			}
+			System.out.println("===== Answer 객체 출력 끝 =====");
+		}
+	}
+
+	// Question 테이블에 값 넣기 / Answer 테이블 답변글 3개 넣기
+//	@Test
+	void insertQuestion11() {
+		Question q = new Question();
+		q.setSubject("질문 - 제목 : Framework이 무엇인가요?");
+		q.setContent("질문 - 내용 : Framework이란 구체적으로 무엇인가요?");
+		q.setCreateDate(LocalDateTime.now());
+		qr.save(q);
+	}
+	
+	@Test
+	void insertAnswer11() {
+		Optional<Question> oq = qr.findById(8);
+		
+		if (oq.isPresent()) {
+			Question q = oq.get();
+			Answer a = new Answer();
+			a.setContent("구현된 기초(템플릿) - AOP, IoC/DI, PSA");
+			a.setCreatedate(LocalDateTime.now());
+			a.setQuestion(q);
+			ar.save(a);
+			
+			Answer aa = new Answer();
+			aa.setContent("2구현된 기초(템플릿) - AOP, IoC/DI, PSA");
+			aa.setCreatedate(LocalDateTime.now());
+			aa.setQuestion(q);
+			ar.save(aa);
+			
+			Answer aaa = new Answer();
+			aaa.setContent("3구현된 기초(템플릿) - AOP, IoC/DI, PSA");
+			aaa.setCreatedate(LocalDateTime.now());
+			aaa.setQuestion(q);
+			ar.save(aaa);
+		}
 	}
 }
