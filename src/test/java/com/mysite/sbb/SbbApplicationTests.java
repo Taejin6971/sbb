@@ -260,7 +260,7 @@ class SbbApplicationTests {
 		
 		Answer a = new Answer();
 		a.setContent("오늘은 날씨가 매우 맑습니다.");
-		a.setCreatedate(LocalDateTime.now());
+		a.setCreateDate(LocalDateTime.now());
 		a.setQuestion(q);
 		ar.save(a);
 	}
@@ -272,13 +272,13 @@ class SbbApplicationTests {
 		
 		Answer a = new Answer();
 		a.setContent("스프링 부트 질문의 답변 1");
-		a.setCreatedate(LocalDateTime.now());
+		a.setCreateDate(LocalDateTime.now());
 		a.setQuestion(q);
 		ar.save(a);
 		
 		Answer aa = new Answer();
 		aa.setContent("스프링 부트 질문의 답변 2");
-		aa.setCreatedate(LocalDateTime.now());
+		aa.setCreateDate(LocalDateTime.now());
 		aa.setQuestion(q);
 		ar.save(aa);
 	}
@@ -290,19 +290,19 @@ class SbbApplicationTests {
 		
 		Answer a = new Answer();
 		a.setContent("야구");
-		a.setCreatedate(LocalDateTime.now());
+		a.setCreateDate(LocalDateTime.now());
 		a.setQuestion(q);
 		ar.save(a);
 		
 		Answer aa = new Answer();
 		aa.setContent("축구");
-		aa.setCreatedate(LocalDateTime.now());
+		aa.setCreateDate(LocalDateTime.now());
 		aa.setQuestion(q);
 		ar.save(aa);
 		
 		Answer aaa = new Answer();
 		aaa.setContent("농구");
-		aaa.setCreatedate(LocalDateTime.now());
+		aaa.setCreateDate(LocalDateTime.now());
 		aaa.setQuestion(q);
 		ar.save(aaa);
 	}
@@ -353,7 +353,7 @@ class SbbApplicationTests {
 			// Answer 객체 생성
 			Answer a = new Answer();
 			a.setContent("4번 질문에 대한 답변글 입니다.");
-			a.setCreatedate(LocalDateTime.now());
+			a.setCreateDate(LocalDateTime.now());
 			a.setQuestion(q);
 			ar.save(a);
 		}
@@ -403,7 +403,7 @@ class SbbApplicationTests {
 				System.out.println(a.getId());
 				System.out.println(a.getQuestion());
 				System.out.println(a.getContent());
-				System.out.println(a.getCreatedate());
+				System.out.println(a.getCreateDate());
 			}
 			System.out.println("===== 3번 글에 대한 답변 모두 출력 끝 =====");
 		}
@@ -426,7 +426,7 @@ class SbbApplicationTests {
 				Answer a = all.get(i);
 				System.out.println(a.getId());
 				System.out.println(a.getContent());
-				System.out.println(a.getCreatedate());
+				System.out.println(a.getCreateDate());
 			}
 			System.out.println("===== Answer 객체 출력 끝 =====");
 		}
@@ -442,7 +442,7 @@ class SbbApplicationTests {
 		qr.save(q);
 	}
 	
-	@Test
+//	@Test
 	void insertAnswer11() {
 		Optional<Question> oq = qr.findById(8);
 		
@@ -450,19 +450,19 @@ class SbbApplicationTests {
 			Question q = oq.get();
 			Answer a = new Answer();
 			a.setContent("구현된 기초(템플릿) - AOP, IoC/DI, PSA");
-			a.setCreatedate(LocalDateTime.now());
+			a.setCreateDate(LocalDateTime.now());
 			a.setQuestion(q);
 			ar.save(a);
 			
 			Answer aa = new Answer();
 			aa.setContent("2구현된 기초(템플릿) - AOP, IoC/DI, PSA");
-			aa.setCreatedate(LocalDateTime.now());
+			aa.setCreateDate(LocalDateTime.now());
 			aa.setQuestion(q);
 			ar.save(aa);
 			
 			Answer aaa = new Answer();
 			aaa.setContent("3구현된 기초(템플릿) - AOP, IoC/DI, PSA");
-			aaa.setCreatedate(LocalDateTime.now());
+			aaa.setCreateDate(LocalDateTime.now());
 			aaa.setQuestion(q);
 			ar.save(aaa);
 		}

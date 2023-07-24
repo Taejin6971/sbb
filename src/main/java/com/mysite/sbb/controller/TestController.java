@@ -20,4 +20,10 @@ public class TestController {
 	public String testmain2() {
 		return "test/main2";
 	}
+	
+//	http://localhost:9696/boot
+	@GetMapping("/boot")
+	public String bootstrap() {
+		return "/test/BootStrap_test";
+	}
 }

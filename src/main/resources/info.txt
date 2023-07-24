@@ -52,3 +52,18 @@ DI (의존성 주입) : IoC 컨테이너에 생성된 객체를 변수에 주입
 	- 생성자를 이용한 주입 : (권장 사항) <== @RequiredArgsConstructor (클래스 위에 할당)
 		private final QuestionRepository questionRepository;
 	- setter를 이용한 주입
+	
+========================================================================
+
+src/main/resources
+	- templates : thymeleaf 뷰 페이지가 위치, *.html
+	- static : 외부의 css, 외부의 javascript 가 위치해야 하는곳, bootstrap 의 파일. css, js
+	
+form 에 변수에 들어오는 값을 체크 : 유효성 체크 (반값, 메일주소 형식, 숫자)
+	1. 라이브러리가 등록 implementation 'org.springframework.boot:spring-boot-starter-validation'
+	2. QuestionForm : DTO
+		@NotEmpty(message = "제목은 필수 항목입니다.") 필드 위에 유효성 확인 어노테이션 적용
+		@Size(max = 200)
+		private String subject;
+	3. Controller
+		메소드 내부엥 (@Valid QuestionForm questionForm, BindingResult bindingResult)

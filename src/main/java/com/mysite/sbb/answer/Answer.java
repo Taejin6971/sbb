@@ -29,11 +29,12 @@ public class Answer {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(columnDefinition = "text")
+//	@Column(columnDefinition = "text")	// Oracle DB에 존재하지 않는 자료형
+	@Column(length = 4000)
 	private String content;
 	
 	@CreatedDate
-	private LocalDateTime createdate;	// 2023-07-18
+	private LocalDateTime createDate;	// 2023-07-18
 		// JPA에서 필드이름을 : createDate <===> CREATE_DATE
 	
 	// Foreign Key

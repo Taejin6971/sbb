@@ -1,5 +1,6 @@
 package com.mysite.sbb.question;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +43,14 @@ public class QuestionService {
 			// throws : 메소드에서 메소드를 호출하는 곳에서 예외를 처리하도록 예외를 전가
 			throw new DataNotFoundException("question not found");
 		}
+	}
+	
+	// 질문 제목 + 질문내용 DB에 저장 : insert, update, delete <== void, 리턴X
+	public void create(String subject, String content) {
+		Question question = new Question();
+		question.setSubject(subject);
+		question.setContent(content);
+		question.setCreateDate(LocalDateTime.now());
+		questionRepository.save(question);
 	}
 }

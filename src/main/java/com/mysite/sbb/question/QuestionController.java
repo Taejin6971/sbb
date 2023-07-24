@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor	// 생성자를 이용한 객체 주입 방식
@@ -44,10 +47,37 @@ public class QuestionController {
 		// 1. 클라이언트 요청을 받는다. : http://localhost:9696/question/detail/{id}
 		// 2. Service 에게 로직을 처리
 		Question question = questionService.getQuestion(id);
-		
+		 
 		// 3. model 객체에 백엔드의 값을 담아서 view페이지로 전송
 		model.addAttribute("question", question);
 		
 		return "question_detail";
 	}
+	
+	// 질문 등록 요청 (get 요청)
+	@GetMapping("/question/create")
+	public String questionCreate(QuestionForm questionForm) {
+		
+		return "question_form";
+	}
+	
+	// 폼에서 제목과 내용을 받아서 DB에 등록 로직
+	@PostMapping("/question/create")
+//	public String questionCreate(@RequestParam String subject, @RequestParam String content) {
+	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+		// 제목과 내용을 받아서 DB에 저장
+		System.out.println("제목(DTO): " + questionForm.getSubject());
+		System.out.println("내용(DTO): " + questionForm.getContent());
+		
+		// 유효성 검사후 DB에 저장
+		if (bindingResult.hasErrors()) {
+			return "question_form";
+		}
+		
+		// DB에 저장
+		questionService.create(questionForm.getSubject(), questionForm.getContent());
+		
+		return "redirect:/question/list";
+	}
+	
 }

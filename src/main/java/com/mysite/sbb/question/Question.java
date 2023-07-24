@@ -41,7 +41,8 @@ public class Question {
 	@Column(length = 200)
 	private String subject;
 	
-	@Column(columnDefinition = "Text")
+//	@Column(columnDefinition = "Text")		// Oracle DB에 존재하지 않는 자료형
+	@Column(length = 4000)
 	private String content;
 	
 	@CreatedDate
