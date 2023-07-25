@@ -1,9 +1,14 @@
 package com.mysite.sbb.question;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;	// 주의해서 import
 import org.springframework.stereotype.Service;
 
 import com.mysite.sbb.DataNotFoundException;
@@ -17,13 +22,31 @@ public class QuestionService {
 	private final QuestionRepository questionRepository;
 
 	// Question 테이블의 모든 레코드를 읽어와서 List<Question> 으로 값을 리턴하는 메소드
-	public List<Question> getList() {
-
+	// 페이징 처리되지 않는 모든 레토드를 리턴 (사용중지)
+//	public List<Question> getList() {
 //		List<Question> questionList = questionRepository.findAll();
 //		return questionList;
-		return questionRepository.findAll();
-	}
+////	return questionRepository.findAll();
+//	}
 
+	// 페이징 처리해서 리턴으로 돌려줌 (사용)
+	public Page<Question> getList(int page) {
+		
+		// Pageable 객체의 특정 컬럼을 정렬할 객체를 생성해서 인자로 넣어준다
+		// Sort Import시 주의 : import org.springframework.data.domain.Sort;
+		List<Sort.Order> sorts = new ArrayList();
+		sorts.add(Sort.Order.desc("id"));
+		
+		// page 변수 : 클라이언트에서 파라메터로 요청한 페이지 번호
+		// 10 : 한 페이지에서 출력할 레코드 갯수
+		// id 컬럼을 desc 
+		Pageable pageable = PageRequest.of(page, 15, Sort.by(sorts));
+		
+		Page<Question> pageQuestion = questionRepository.findAll(pageable);
+		
+		return pageQuestion;
+	}
+	
 	// 글 상세 페이지
 	public Question getQuestion(Integer id) {
 		// findById(?)
@@ -53,4 +76,5 @@ public class QuestionService {
 		question.setCreateDate(LocalDateTime.now());
 		questionRepository.save(question);
 	}
+
 }

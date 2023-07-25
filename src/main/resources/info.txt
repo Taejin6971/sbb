@@ -67,3 +67,17 @@ form 에 변수에 들어오는 값을 체크 : 유효성 체크 (반값, 메일
 		private String subject;
 	3. Controller
 		메소드 내부엥 (@Valid QuestionForm questionForm, BindingResult bindingResult)
+
+========================================================================
+
+Paging 처리
+	- JPA 라이브러리 등록, JPA에 등록된 객체가 자동으로 페이징 처리를 쉽게 한다
+	
+	org.springframework.data.domain.Page
+	org.springframework.data.domain.PageReuqest
+	org.springframework.data.domain.Pageable
+	
+	-- 레파지토리에서 설정 (pageable: 요청한 페이지 번호, 레코드 갯수)
+	Page<Question> findAll(Pageable pageable)
+	
+	-- 서비스에서 컨트롤러로 부터 클라이언트가 요청한 페이지번호를 받아서 pageable 객체에 할당, 레코드 수 할당
