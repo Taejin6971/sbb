@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;	// 주의해서 import
 import org.springframework.stereotype.Service;
 
 import com.mysite.sbb.DataNotFoundException;
+import com.mysite.sbb.user.SiteUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -69,11 +70,16 @@ public class QuestionService {
 	}
 	
 	// 질문 제목 + 질문내용 DB에 저장 : insert, update, delete <== void, 리턴X
-	public void create(String subject, String content) {
+	public void create(String subject, String content, SiteUser siteUser) {
 		Question question = new Question();
+		
 		question.setSubject(subject);
 		question.setContent(content);
 		question.setCreateDate(LocalDateTime.now());
+		
+		// 추가
+		question.setAuthor(siteUser);
+		
 		questionRepository.save(question);
 	}
 

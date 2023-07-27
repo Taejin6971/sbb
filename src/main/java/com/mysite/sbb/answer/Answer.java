@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.mysite.sbb.question.Question;
+import com.mysite.sbb.user.SiteUser;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,4 +42,9 @@ public class Answer {
 		// question <===> QUESTION_ID
 	@ManyToOne		// 답변(Answer) : Many ===> 질문(Question) : One
 	private Question question;
+	
+	// Foreign Key : SiteUserId
+	@ManyToOne
+	private SiteUser author;
+	
 }

@@ -1,5 +1,7 @@
 package com.mysite.sbb.question;
 
+import java.security.Principal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mysite.sbb.answer.AnswerForm;
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +30,27 @@ public class QuestionController {
 	
 //	private final QuestionRepository questionRepository;
 	private final QuestionService questionService;
+	private final UserService userService;
 
 	// client의 /question/list 요청을 처리하는 메소드
 	// http://localhost:9696/question/list
 	// 리스트
 	// http://localhost:9696/question/list?pqge=1
 	@GetMapping("/list")
-	public String list(Model model, @RequestParam(value="page", defaultValue="0")int page) {
+	public String list(Model model, @RequestParam(value="page", defaultValue="0") int page) {
 		// 1. client 요청을 받는다. http://localhost:9696/question/list
 		
 		// 2. 비즈니스 로직 처리
 //		List<Question> questionList = this.questionRepository.findAll();
 		Page<Question> paging = questionService.getList(page);
+		
+//		System.out.println("페이지 존재여부 : " + paging.isEmpty());
+//		System.out.println("전체 레코드 수 : " + paging.getTotalElements());
+//		System.out.println("전체 페이지 수 : " + paging.getTotalPages());
+//		System.out.println("페이지당 출력할 레코드 갯수 : " + paging.getSize());
+//		System.out.println("현재 페이지 : " + paging.getNumber());
+//		System.out.println("이전 페이지 여부 : " + paging.hasPrevious());
+//		System.out.println("다음 페이지 여부 : " + paging.hasNext());
 		
 		// 3. 받아온 List를 Client로 전송 (Model 객체에 저장해서 Client로 전송)
 		model.addAttribute("paging", paging);
@@ -71,9 +84,10 @@ public class QuestionController {
 	}
 	
 	// 폼에서 제목과 내용을 받아서 DB에 등록 로직
-	@PostMapping("/create")
+	@PostMapping("/create")			// /question/create
 //	public String questionCreate(@RequestParam String subject, @RequestParam String content) {
-	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult,
+			Principal principal) {
 		// 제목과 내용을 받아서 DB에 저장
 		System.out.println("제목(DTO): " + questionForm.getSubject());
 		System.out.println("내용(DTO): " + questionForm.getContent());
@@ -83,8 +97,11 @@ public class QuestionController {
 			return "question_form";
 		}
 		
+		// principal.getName() : 현재 로그인한 계정의 username 알아온다.
+		SiteUser siteUser = userService.getUser(principal.getName());
+		
 		// DB에 저장
-		questionService.create(questionForm.getSubject(), questionForm.getContent());
+		questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
 		
 		return "redirect:/question/list";
 	}

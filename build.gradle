@@ -46,15 +46,20 @@ dependencies {
 	// JPA 라이브러리 등록
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	
-	//Spring 에서 제공해주는 유효성 검사 라이브러리 : form에서 빈값이나 글자수 제한 
+	// Spring 에서 제공해주는 유효성 검사 라이브러리 : form에서 빈값이나 글자수 제한 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     
-    //oracle 라이브러리 
+    // oracle 라이브러리 
 	//implementation 'com.oracle.database.jdbc:ojdbc10'
 	implementation 'com.oracle.database.jdbc:ojdbc11'
 	
-	//JDBC
+	// JDBC
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	
+	// Spring Security 라이브러리 추가(2개)
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+	
 }
 
 tasks.named('test') {

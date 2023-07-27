@@ -81,3 +81,13 @@ Paging 처리
 	Page<Question> findAll(Pageable pageable)
 	
 	-- 서비스에서 컨트롤러로 부터 클라이언트가 요청한 페이지번호를 받아서 pageable 객체에 할당, 레코드 수 할당
+	
+==========================================================================
+
+인증 (Authentication)	: ID (IDentity) + Password 를 확인하는 작업
+허가 (Authorization)	: 인증된 사용자에게 권한을 부여하는 작업
+	- Admin
+	- user
+	
+	sec:Authorize="isAnonymous()"		: 로그인 되지 않는 상태 (true)
+	sec:Authorize="isAuthenticated()"	: 로그인된 상태 (true)

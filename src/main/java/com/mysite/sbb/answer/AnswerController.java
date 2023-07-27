@@ -1,5 +1,7 @@
 package com.mysite.sbb.answer;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.Validation;
@@ -25,11 +29,17 @@ public class AnswerController {
 	
 	private final AnswerService answerService;
 	private final QuestionService questionService;
+	private final UserService userService;
 	
 	// 답변글을 저장
 	@PostMapping("/create/{id}")	// answer/create/{id}
 	public String createAnswer(Model model, @PathVariable Integer id, 
-			@Valid AnswerForm answerForm, BindingResult bindingResult) {
+			@Valid AnswerForm answerForm, BindingResult bindingResult, 
+			Principal principal) {
+		
+		// Principal : 로그인한 사용자 정보 (사용자 ID)
+		// principal.getName() : Client 시스템에서 현재 로그인한 정보를 가지고옴.
+//		System.out.println("현재 로그인한 사용자 정보 : " + principal.getName());
 		
 		// id 변수가 잘 넘어오는지 출력	
 //		System.out.println("===== id: " + id + "=====");
@@ -45,8 +55,11 @@ public class AnswerController {
 			return "question_detail";
 		}
 		
+		// Principal 에서 username 을 인풋받아서 SiteUser 객체를 받아온다
+		SiteUser siteUser = userService.getUser(principal.getName());
+		
 		// 2. Service 에서 변수 2개를 넣어서 값을 Insert
-		answerService.create(question, answerForm.getContent());
+		answerService.create(question, answerForm.getContent(), siteUser);
 		
 		// question_detail 로 리턴 : get 방식으로 URL로 redirect
 		return String.format("redirect:/question/detail/%s", id);
