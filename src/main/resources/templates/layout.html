@@ -10,17 +10,16 @@
 	<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
 	<!-- sbb CSS -->
 	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
-
 </head>
 
 <body>
 	<!-- layout.html : 템플릿 페이지, 모든 타임리프 페이지에서 적용 되는 페이지 
 		모든 페이지에서 css, js, bootstrap 
 	-->
-	
+
 	<!-- navbar.html 불러들이기 : 외부의 파일을 불러들임 -->
-		<div th:replace="~{navbar::navbarFragment}"></div>
-	
+	<div th:replace="~{navbar::navbarFragment}"></div>
+
 	<!-- 모든 페이지가 적용되는 html -->
 	<th:block layout:fragment="content"></th:block>
 
@@ -29,6 +28,18 @@
 
 	<!-- Bootstrap JavaScript -->
 	<script th:src="@{/bootstrap.min.js}"></script>
+
+	<script type='text/javascript'>
+
+		const delete_elements = document.getElementsByClassName("delete");
+		Array.from(delete_elements).forEach(function (element) {
+			element.addEventListener('click', function () {
+				if (confirm("정말로 삭제하시겠습니까?")) {
+					location.href = this.dataset.uri;
+				};
+			});
+		});
+	</script>
 </body>
 
 </html>

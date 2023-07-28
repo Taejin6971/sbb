@@ -2,9 +2,11 @@ package com.mysite.sbb.question;
 
 import jakarta.validation.constraints.NotEmpty; // 유효성 검사
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class QuestionForm {		// DTO
 	
 	@NotEmpty(message = "제목은 필수 항목입니다.")

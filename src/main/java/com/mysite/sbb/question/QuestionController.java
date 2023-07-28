@@ -3,6 +3,7 @@ package com.mysite.sbb.question;
 import java.security.Principal;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -77,6 +78,7 @@ public class QuestionController {
 	}
 	
 	// 질문 등록 요청 (get 요청)
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/create")
 	public String questionCreate(QuestionForm questionForm) {
 		
@@ -84,10 +86,16 @@ public class QuestionController {
 	}
 	
 	// 폼에서 제목과 내용을 받아서 DB에 등록 로직
+	@PreAuthorize("isAuthenticated()")
+		// 인증된 사용자만 접근가능
+		// 인증되지 않는 사용자가 접근시 : /user/login 페이지로 돌려줌 <== SpringSecurity
 	@PostMapping("/create")			// /question/create
 //	public String questionCreate(@RequestParam String subject, @RequestParam String content) {
 	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult,
 			Principal principal) {
+		
+		System.out.println("현재 로그인한 계정 : " + principal.getName());
+		
 		// 제목과 내용을 받아서 DB에 저장
 		System.out.println("제목(DTO): " + questionForm.getSubject());
 		System.out.println("내용(DTO): " + questionForm.getContent());
@@ -98,12 +106,67 @@ public class QuestionController {
 		}
 		
 		// principal.getName() : 현재 로그인한 계정의 username 알아온다.
+		// 로그인 하지않는 상태에서 : principal.getName() 을 호출하는 경우 오류페이지가 발생
 		SiteUser siteUser = userService.getUser(principal.getName());
 		
 		// DB에 저장
 		questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
 		
 		return "redirect:/question/list";
+	}
+	
+	// 글 수정
+	@PreAuthorize("isAuthenticated")
+	@GetMapping("/modify/{id}")
+	public String questionModify(@PathVariable("id") Integer id,
+			QuestionForm questionForm , Principal principal) {
+		
+		// id 변수를
+		Question question = questionService.getQuestion(id);
+		
+		//DB에서 가져온 question 객체의 값을 questionForm setter 주입
+		questionForm.setSubject(question.getSubject());
+		questionForm.setContent(question.getContent());
+		
+		// question_form.html : 질문글 등록, 수정
+		return "question_form";
+	}
+	
+	// 글 수정
+	@PreAuthorize("isAuthenticated")
+	@PostMapping("/modify/{id}")
+	public String questionModify(@PathVariable("id") Integer id,
+			@Valid QuestionForm questionForm, BindingResult bindingResult,
+			Principal principal) {
+		
+		// 글 수정시 제목과 내용을 반드시 체크후 수정하도록 
+		if (bindingResult.hasErrors()) {
+			return "question_form";
+		}
+		
+		// 1. id 변수를 가지고 Question 객체 호출
+		Question question = questionService.getQuestion(id);
+		
+		// 글 수정
+		questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
+		
+		// 글 수정후
+		return String.format("redirect:/question/detail/%s", id);
+	}
+	
+	// 글 삭제
+	@GetMapping("/delete/{id}")
+	public String delete(@PathVariable("id") Integer id
+			) {
+		
+		// 1. id 변수를 가지고 Question 객체 호출
+		Question question = questionService.getQuestion(id);
+		
+		// 2.
+		questionService.delete(question);
+		
+		// 삭제 후 "/"로 이동
+		return "redirect:/";	// http://localhost:9696/
 	}
 	
 }

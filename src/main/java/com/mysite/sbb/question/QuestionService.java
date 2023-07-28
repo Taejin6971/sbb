@@ -32,7 +32,6 @@ public class QuestionService {
 
 	// 페이징 처리해서 리턴으로 돌려줌 (사용)
 	public Page<Question> getList(int page) {
-		
 		// Pageable 객체의 특정 컬럼을 정렬할 객체를 생성해서 인자로 넣어준다
 		// Sort Import시 주의 : import org.springframework.data.domain.Sort;
 		List<Sort.Order> sorts = new ArrayList();
@@ -70,7 +69,7 @@ public class QuestionService {
 	}
 	
 	// 질문 제목 + 질문내용 DB에 저장 : insert, update, delete <== void, 리턴X
-	public void create(String subject, String content, SiteUser siteUser) {
+	public void create(String subject, String content, SiteUser author) {
 		Question question = new Question();
 		
 		question.setSubject(subject);
@@ -78,9 +77,23 @@ public class QuestionService {
 		question.setCreateDate(LocalDateTime.now());
 		
 		// 추가
-		question.setAuthor(siteUser);
+		question.setAuthor(author);
 		
 		questionRepository.save(question);
+	}
+	
+	// 글 수정
+	public void modify(Question question, String subject, String content) {
+		question.setSubject(subject);
+		question.setContent(content);
+		question.setCreateDate(LocalDateTime.now());
+		
+		questionRepository.save(question);
+	}
+	
+	// 글 삭제 : delete() : delete할 question 객체를 가져와서 인풋
+	public void delete(Question question) {
+		questionRepository.delete(question);
 	}
 
 }

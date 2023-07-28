@@ -2,13 +2,13 @@ package com.mysite.sbb.answer;
 
 import java.security.Principal;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
@@ -16,7 +16,6 @@ import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/answer")
@@ -31,7 +30,8 @@ public class AnswerController {
 	private final QuestionService questionService;
 	private final UserService userService;
 	
-	// 답변글을 저장
+	// 답변글을 저장 : 반드시 로그인후 저장할수 잇도록 설정
+	@PreAuthorize("isAuthenticated()") 
 	@PostMapping("/create/{id}")	// answer/create/{id}
 	public String createAnswer(Model model, @PathVariable Integer id, 
 			@Valid AnswerForm answerForm, BindingResult bindingResult, 
