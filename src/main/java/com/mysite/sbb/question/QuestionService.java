@@ -82,11 +82,11 @@ public class QuestionService {
 		questionRepository.save(question);
 	}
 	
-	// 글 수정
+	// 글 수정 : save()
 	public void modify(Question question, String subject, String content) {
 		question.setSubject(subject);
 		question.setContent(content);
-		question.setCreateDate(LocalDateTime.now());
+		question.setModifyDate(LocalDateTime.now());
 		
 		questionRepository.save(question);
 	}
@@ -94,6 +94,15 @@ public class QuestionService {
 	// 글 삭제 : delete() : delete할 question 객체를 가져와서 인풋
 	public void delete(Question question) {
 		questionRepository.delete(question);
+	}
+	
+	// 글 추천 등록 메소드
+	public void vote(Question question, SiteUser siteUser) {
+		// question.getVoter() <== Set(자료형)
+		question.getVoter().add(siteUser);
+//		question.setVoter(siteUser); 	오류발생
+
+		questionRepository.save(question);
 	}
 
 }

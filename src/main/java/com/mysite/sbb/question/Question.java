@@ -2,6 +2,7 @@ package com.mysite.sbb.question;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 
@@ -51,6 +52,8 @@ public class Question {
 	@CreatedDate
 	private LocalDateTime createDate;
 	
+	private LocalDateTime modifyDate;
+	
 	// 실제 테이블에는 적용되지 않음
 	// 해당 질문에 대한 모든 답변을 불러오는 컬럼
 	// Question 객체의 id필드에 들어오는 값에 대한 Answer 테이블의 모든 값을 List에 담는다
@@ -73,5 +76,13 @@ public class Question {
 	
 	@ManyToOne
 	private SiteUser author;
+	
+	// 질문과 추천인의 관계는 多 : 多
+	// Set은 중복된 닶이 올수 없다
+	// QUESTION_VOTER 테이블이 생성됨 : QUESTION_ID, VOTER_ID 컬럼이 생성됨
+		// QUESTION_ID 컬럼은 Question 테이블의 ID 컬럼을 참조
+		// VOTER_ID 컬럼은 SiteUser 테이블의 ID 컬럼을 참조
+	@ManyToMany
+	Set<SiteUser> voter;
 	
 }

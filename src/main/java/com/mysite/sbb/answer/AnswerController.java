@@ -2,13 +2,16 @@ package com.mysite.sbb.answer;
 
 import java.security.Principal;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
@@ -65,4 +68,76 @@ public class AnswerController {
 		return String.format("redirect:/question/detail/%s", id);
 	}
 	
+	// 답변글 수정 view 페이지로 전달
+	@PreAuthorize("isAuthenticated()")	// 인증된 사용자만 접근가능, 인증되지 않았을때 인증 form으로 전송
+	@GetMapping("/modify/{id}")
+	public String answerModify(@PathVariable("id") Integer id, 
+			AnswerForm answerForm, Principal principal) {
+		
+		// id 값으로 Answer 객체 변환
+		Answer answer = answerService.getAnswer(id);
+		
+		// answerForm : DB에서 가져온 값을 저장후 view 페이지로 전송
+		answerForm.setContent(answer.getContent());
+		
+		// 답글을 수정하는 페이지로 던짐
+		return "answer_form";
+	}
+	
+	// 답글 DB에 수정
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping("/modify/{id}")
+	public String answerModify(@PathVariable("id") Integer id,
+			@Valid AnswerForm answerForm, BindingResult bindingResult,
+			Principal principal) {
+		
+		// id를 받아서 Answer 객체를 꺼내온다.
+		Answer answer = answerService.getAnswer(id);
+		
+		// answerForm 의 content 필드의 값이 넘어오지 않을 경우
+		if (bindingResult.hasErrors()) {
+			return "answer_form";
+		}
+		
+		if (!answer.getAuthor().getUsername().equals(principal.getName())) {
+			// DB에 질문을 등록한 계정과 현재 호그온한 계정이 같지 않을때 예외 발생
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "답글 수정 권한이 없습니다.");
+		}
+		
+		//
+		answerService.modify(answer, answerForm.getContent());
+		
+		return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+	}
+	
+	// 답변 삭제
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/delete/{id}")
+	public String answerDelete(@PathVariable ("id") Integer id) {
+		// id 값으로 Answer 객체를 DB에서 가지고 온다.
+		Answer answer = answerService.getAnswer(id); 
+		
+		// delete 메소드 호출 
+		answerService.delete(answer);
+		
+		return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+	}
+	
+	// 답변 추천 등록
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/vote/{id}")
+	public String answerVote(@PathVariable("id") Integer id,
+			Principal principal) {
+		
+		// id로 Answer 객체 리턴
+		Answer answer = answerService.getAnswer(id);
+		
+		// principal로 SiteUser 객체를 리턴
+		SiteUser siteUser = userService.getUser(principal.getName());
+		
+		answerService.vote(answer, siteUser);
+		
+		return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+	}
+			
 }

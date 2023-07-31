@@ -1,9 +1,11 @@
 package com.mysite.sbb.answer;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.mysite.sbb.DataNotFoundException;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.user.SiteUser;
 
@@ -26,6 +28,42 @@ public class AnswerService {
 		// 추가됨
 		answer.setAuthor(author);
 
+		answerRepository.save(answer);
+	}
+	
+	// 답변글 수정 전에 id 값을 받아서 Answer 객체를 리턴으로 돌려줌 
+	public Answer getAnswer (Integer id) {
+		
+		Optional<Answer> _answer = answerRepository.findById(id);
+		
+		// _answer 의 객체가 비어있지 않을때 리턴
+		if (_answer.isPresent()) {
+			return _answer.get();
+			
+		} else {
+			// 객체가 비어있을때 : DB의 값이 존재하지 않을때 예외발생
+			throw new DataNotFoundException("answer not found");
+
+		}
+	}
+	
+	// 답변 수정 메소드
+	public void modify(Answer answer, String content) {
+		answer.setContent(content);
+		answer.setModifyDate(LocalDateTime.now());
+		
+		answerRepository.save(answer);		
+	}
+	
+	// 삭제 메소드 : Answer 객체를 매개변수로 받아서 삭제
+	public void delete(Answer answer) {
+		
+		answerRepository.delete(answer);
+	}
+	
+	public void vote(Answer answer, SiteUser siteUser) {
+		answer.getVoter().add(siteUser);
+		
 		answerRepository.save(answer);
 	}
 }

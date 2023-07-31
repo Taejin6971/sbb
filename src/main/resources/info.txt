@@ -68,7 +68,7 @@ form 에 변수에 들어오는 값을 체크 : 유효성 체크 (반값, 메일
 	3. Controller
 		메소드 내부엥 (@Valid QuestionForm questionForm, BindingResult bindingResult)
 
-========================================================================
+=========================================================================
 
 Paging 처리
 	- JPA 라이브러리 등록, JPA에 등록된 객체가 자동으로 페이징 처리를 쉽게 한다
@@ -91,3 +91,19 @@ Paging 처리
 	
 	sec:Authorize="isAnonymous()"		: 로그인 되지 않는 상태 (true)
 	sec:Authorize="isAuthenticated()"	: 로그인된 상태 (true)
+	
+==========================================================================
+
+					default
+----------------------------------
+@OnetoOne		: FetchType.EAGER
+@OnetoMany		: FetchType.EAGER
+@ManytoOne		: FetchType.LAZY
+@ManytoMany		: FetchType.LAZY
+
+즉시 로딩 : FetchType.EAGER	<== RAM을 많이 차지하고 부하가 많이 걸린다.
+지연 로딩 : FetchType.LAZY		<== 지연 로딩을 권장
+
+사용법 : @ManyToMany(fetch = FetchType.LAZY)
+
+==========================================================================
