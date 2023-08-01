@@ -40,12 +40,14 @@ public class QuestionController {
 	// 리스트
 	// http://localhost:9696/question/list?pqge=1
 	@GetMapping("/list")
-	public String list(Model model, @RequestParam(value="page", defaultValue="0") int page) {
+	public String list(Model model, 
+			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="kw", defaultValue="") String kw) {
 		// 1. client 요청을 받는다. http://localhost:9696/question/list
 		
 		// 2. 비즈니스 로직 처리
 //		List<Question> questionList = this.questionRepository.findAll();
-		Page<Question> paging = questionService.getList(page);
+		Page<Question> paging = questionService.getList(page, kw);
 		
 //		System.out.println("페이지 존재여부 : " + paging.isEmpty());
 //		System.out.println("전체 레코드 수 : " + paging.getTotalElements());
@@ -57,6 +59,7 @@ public class QuestionController {
 		
 		// 3. 받아온 List를 Client로 전송 (Model 객체에 저장해서 Client로 전송)
 		model.addAttribute("paging", paging);
+		model.addAttribute("kw", kw);
 		
 		return "question_list";
 	}

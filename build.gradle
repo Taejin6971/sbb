@@ -60,8 +60,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
     
-	//MySQL Driver
+	// MySQL Driver
 	implementation 'com.mysql:mysql-connector-j'
+	
+	// 마크다운 라이브러리 추가
+	implementation 'org.commonmark:commonmark:0.21.0'
 	
 }
 
