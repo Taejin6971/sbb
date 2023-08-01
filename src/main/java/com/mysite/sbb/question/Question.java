@@ -12,6 +12,7 @@ import com.mysite.sbb.user.SiteUser;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;		// spring boot 3.0, 
+import jakarta.persistence.FetchType;
 // import javax.persistence.Entity;		// spring boot 2.0
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -74,7 +75,7 @@ public class Question {
 		// SiteUser 테이블의 특정 레코드를 참조해서 입력
 	// Foreign Key 설정
 	
-	@ManyToOne
+	@ManyToOne (fetch = FetchType.LAZY)
 	private SiteUser author;
 	
 	// 질문과 추천인의 관계는 多 : 多

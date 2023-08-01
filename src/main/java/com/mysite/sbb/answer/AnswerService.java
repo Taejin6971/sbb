@@ -18,7 +18,7 @@ public class AnswerService {
 	private final AnswerRepository answerRepository;
 	
 	// 답변 글 등록 : Question 객체, content
-	public void create(Question question, String content, SiteUser author) {
+	public Answer create(Question question, String content, SiteUser author) {
 		Answer answer = new Answer();
 		
 		answer.setContent(content);
@@ -29,6 +29,9 @@ public class AnswerService {
 		answer.setAuthor(author);
 
 		answerRepository.save(answer);
+		
+		// DB에 값을 넣은후 넣은 객체를 반환
+		return answer;
 	}
 	
 	// 답변글 수정 전에 id 값을 받아서 Answer 객체를 리턴으로 돌려줌 

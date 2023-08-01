@@ -97,8 +97,8 @@ Paging 처리
 					default
 ----------------------------------
 @OnetoOne		: FetchType.EAGER
-@OnetoMany		: FetchType.EAGER
-@ManytoOne		: FetchType.LAZY
+@ManytoOne		: FetchType.EAGER
+@OnetoMany		: FetchType.LAZY
 @ManytoMany		: FetchType.LAZY
 
 즉시 로딩 : FetchType.EAGER	<== RAM을 많이 차지하고 부하가 많이 걸린다.
