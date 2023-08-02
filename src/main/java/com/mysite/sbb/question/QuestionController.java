@@ -39,9 +39,9 @@ public class QuestionController {
 	// http://localhost:9696/question/list
 	// 리스트
 	// http://localhost:9696/question/list?pqge=1
-	@GetMapping("/list")
+	@GetMapping("/list")	// /question/list?kw=&page=0
 	public String list(Model model, 
-			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="page", defaultValue="0") int page, 
 			@RequestParam(value="kw", defaultValue="") String kw) {
 		// 1. client 요청을 받는다. http://localhost:9696/question/list
 		

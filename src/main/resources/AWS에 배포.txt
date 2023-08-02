@@ -1,0 +1,92 @@
+
+1. AWS EC2에 Ubuntu Linux 인스턴스(VM) 생성
+
+2. Spring Boot 에서 배포 파일 생성 : jar
+	- JAR : 내장 톰캣으로 배포, 타임리프
+	- WAR : 외장 톰캣을 사용, JSP
+
+	bootJar
+	${workspace_loc:/sbb}
+
+	C:\workspace-STS4\sbb\build\libs\sbb-0.0.1-SNAPSHOT.jar
+	
+	sbb-0.0.1-SNAPSHOT.jar <== 배포 파일 : java -jar sbb-0.0.1-SNAPSHOT.jar
+
+3. VM에 접속후 기본 셋팅
+	- 컴퓨터 이름 변경
+		ubuntu@ip-172-31-40-71:~$
+		<계정명 @ 서버명 : 현재작업폴더$>
+		sudo vi /etc/hostname
+		srv1
+		sudo reboot
+		
+	- 시스템의 시간대 변경 : 서울 시간대로 설정	
+		date : 현재 시스템의 시간을 출력하는 명령어
+		sudo ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+		
+4. VM에 JDK-17 버전 설치 : jar 파일의 압축을 풀수있다.
+	- java 설치확인
+		java
+		sudo apt update
+		sudo apt install openjdk-17-jre-headless
+		java -version
+
+5. sbb-0.0.1-SNAPSHOT.jar을 서버에 전송
+	- 업로드할 폴더 생성
+		cd ~
+		mkdir sbb	<== 현재 로그온한 계정이 쓰기 권한이 있는지 확인
+		ls -la
+		
+		cd sbb
+		java -jar sbb-0.0.1-SNAPSHOT.jar	<== 9696 포트에서 작동됨
+		
+6. AWS 방화벽에서 서비스되는 포트를 오픈
+	TCP 9696 포트 오픈
+	TCP 80 포트 오픈
+	
+7. 작동중인 서비스 확인
+	ps -ef | grep java | grep sbb
+	
+	UID : 계정에게 부여되는 고유번호
+	PID : 프로세스에세 부여되는 고유 번호
+	GID : 그룹에게 부여되는 고유 번호
+	
+	프로세스 강제종료 (실행중인 서비스 강제종료)
+	sudo kill -9 PID
+	
+8. 9696 포트 서비스 jar 파일을 80번 포트에 매핑
+	*주의 80번 포트로 서비스 시작할때는 : sodu 명령어로 작동 해야한다.
+	
+	sudo java -Dserver.port=80 -jar sbb-0.0.1-SNAPSHOT.jar
+	sudo java -jar sbb-0.0.2-SNAPSHOT.jar
+	
+9. 서비스 작동시 백그라운드 모드로 작동 : &
+	포그라운드 모드 : sudo java -jar sbb-0.0.2-SNAPSHOT.jar
+	백그라운드 모드 : sudo java -jar sbb-0.0.2-SNAPSHOT.jar &
+	
+10. 서비스 시작 스크립트 : start.sh
+=============================
+#!/bin/bash
+
+JAR=sbb/sbb-0.0.1-SNAPSHOT.jar
+LOG=/home/ubuntu/sbb/sbb.log
+
+nohup java -jar $JAR > $LOG 2>&1 &
+=============================
+실행 권한 부여 : sudo chmod +x start.sh
+
+11. 서비스 종료 스크립트 : stop.sh
+=============================
+#!/bin/bash
+
+SBB_PID=$(ps -ef | grep java | grep sbb | awk '{print $2}')
+
+if [ -z "$SBB_PID" ];
+then
+	echo "SBB is not running"
+else
+	sudo kill -9 $SBB_PID
+	echo "SBB stopped."
+fi
+=============================
+실행 권한 부여 : sudo chmod +x stop.sh
