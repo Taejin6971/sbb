@@ -101,7 +101,7 @@ Wed Server(Ngenx) ==> WAS(Tomcat) ==> DB(Oracle)
 
 AWS VM 2개 생성
 	- Wed : Wed Server(TCP 80), WAS(Tomcat) (TCP 9696)
-		- 13.209.73.40
+		- 52.79.241.57
 		- hostname 설정	: sudo hostnamectl set-hostname WEB
 		- 시간대 설정		: sudo ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 		- 방화벽 오픈		: TCP 80, TCP 9696
@@ -113,7 +113,7 @@ AWS VM 2개 생성
 		- Local Spring Boot 배포 파일을 서버로 전송
 		
 	- DB : Oracle, 도커 레지스트리에서 Oracle 이미지 다운 (TCP 1521)
-		- 13.209.66.182
+		- 52.79.250.224
 		- hostname 설정	: sudo hostnamectl set-hostname DB
 		- 시간대 설정		: sudo ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 		- 방화벽 오픈(AWS)	: TCP 1521
@@ -161,11 +161,14 @@ $ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plug
 • // 도커 설치 확인
 $ docker version
 
+• // 도커 실행 확인
+$ sudo systemctl status docker
+
 • // 계정 설정
 $ sudo passwd root	<== root 계정의 패스워드 부여 : 1234
 
 $ su – root		<== 로그아웃 없이 root계정으로 이동
-$ usermod -aG docker ubuntu			//vi /etc/group 
+$ sudo usermod -aG docker ubuntu			//vi /etc/group 
 	//ubuntu 계정을 docker 그룹에 포함  
 	//현재 로그온한 계정이 docker 그룹에 포함되어 있어야 docker의 기능을 사용할 수 있는 권한을 가진다. 
 	
@@ -201,6 +204,7 @@ $ docker run -d -p 3306:3306 --name db-mysql -e MYSQL_ROOT_PASSWORD=1234 mysql
 		application-prod.properties		: 운영 환경
 
 ================================================================================
+
 서비스 시작 스크립트 : start_prod.sh
 	$ cd ~
 	$ vi start_prod.sh
@@ -209,9 +213,8 @@ $ docker run -d -p 3306:3306 --name db-mysql -e MYSQL_ROOT_PASSWORD=1234 mysql
 
 JAR=sbb/sbb-0.0.3-SNAPSHOT.jar
 LOG=/home/ubuntu/sbb/sbb.log
-export spring_profiles_active=prod
 
-nohup sudo java -jar $JAR > $LOG 2>&1 &
+nohup sudo java -Dspring.profiles.active=prod -jar $JAR > $LOG 2>&1 &
 =============================
 실행 권한 부여 : sudo chmod +x start_prod.sh
 
@@ -231,4 +234,88 @@ else
 fi
 =============================
 실행 권한 부여 : sudo chmod +x stop.sh
+
+
 ================================================================================
+WEB (Nginx) ==> WAS (Tomcat) ==> DB (MySQL : docker Container)
+	TCP 80		  TCTP 9696		   TCP 3306
+	
+// Nginx 설치
+$ sudo apt install nginx
+
+// Nginx 서비스 작동 확인
+$ sudo systemctl status nginx
+
+// Nginx 설정
+$ cd /etc/nginx/sites-available
+
+$ sudo rm default
+
+$ sudo vi sbb
+============================================
+server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+                proxy_pass http://localhost:9696;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $http_host;
+        }
+}
+============================================
+
+// 기존 default 설정 제거후 새로운 링크 생성
+$ cd /etc/nginx/sites-enabled
+$ sudo rm default
+$ sudo ln -s /etc/nginx/sites-available/sbb
+
+// nginx 서비스 다시 시작
+$ sudo systemctl restart nginx
+
+// nginx 설정의 오류난 경우만
+$ sudo nginx -t
+
+=============================================
+// WAS (Tomcat) 작동 : TCP 9696
+
+$ cd ~/sbb
+$ java -Dspring.profiles.active=prod -jar sbb-0.0.5-SNAPSHOT.jar
+		application.properties		: 개발
+		application_prod.properties	: 운영
+		
+==============================================
+Local 에서 VM 3개 생성 : RAM 4GB
+
+		WEB					WAS					DB
+		========================================================
+		Nginx				Tomcat				MySQL (Docker Container)
+		TCP 80				TCP 9696			TCP 3306
+		========================================================
+		Nginx				jdk 17				docker (MySQL)
+IP :	192.168.x.100		192.168.x.110		192.168.x.120
+SM :	255.255.255.0(24)	255.255.255.0(24)	255.255.255.0(24)
+GW :	192.168.x.2			192.168.x.2			192.168.x.2
+DNS:	192.168.x.2			192.168.x.2			192.168.x.2
+	
+	1. 컴퓨터 이름 변경
+	2. 시간대 변경 (서울)
+	3. ssh 설치
+	4. 고정 IP : nmtui
+
+// Ubuntu 를 VM에 설치 할 경우 ssh가 설치가 되어있지 않다.
+$ sudo systemctl status ssh
+
+$ sudo apt update
+$ sudo apt install openssh-server
+
+// 방화벽 상태 확인
+$ sudo ufw status
+$ sudo ufw disable	:방화벽 비활성화
+
+// TCP / IP Setting (고정 IP) : nmtui
+$ ping 8.8.8.8
+$ ip addr		: 자동으로 VMWare에서 부여된 IP 확인	192.168.*(111).128
+
+ncpa.cpl	: 
